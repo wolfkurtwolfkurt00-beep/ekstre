@@ -77,19 +77,19 @@ hr{border:none;border-top:1px solid var(--border)}
 
 <header>
   <div class="logo-block">
-    <h1>// EKSTRE SİSTEMİ</h1>
-    <p>Müşteri Hesap Ekstresi · Google Drive</p>
+    <h1>// EKSTRE SISTEMI</h1>
+    <p>Musteri Hesap Ekstresi · Google Drive</p>
   </div>
   <div id="userInfo" style="display:none">
     <span id="userName"></span>
-    <button class="btn btn-outline" onclick="handleLogout()">Çıkış</button>
+    <button class="btn btn-outline" onclick="handleLogout()">Cikis</button>
   </div>
 </header>
 
 <div class="card">
   <div id="loginSection">
-    <h2>Google ile Giriş Yapın</h2>
-    <p>SOA ONE klasöründeki verilere erişmek ve ekstreyi Drive'ınıza kaydetmek için Google hesabınızla giriş yapın.</p>
+    <h2>Google ile Giris Yapin</h2>
+    <p>SOA ONE klasorundeki verilere erismek ve ekstreyi Drive'iniza kaydetmek icin Google hesabinizla giris yapin.</p>
     <button class="btn btn-google" id="loginBtn" onclick="handleLogin()">
       <svg width="18" height="18" viewBox="0 0 48 48">
         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -97,48 +97,48 @@ hr{border:none;border-top:1px solid var(--border)}
         <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
         <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
       </svg>
-      Google ile Giriş Yap
+      Google ile Giris Yap
     </button>
     <div id="loginStatus" class="status-msg"></div>
   </div>
 
   <div id="loadingSection">
     <div class="spinner"></div>
-    <div id="loadingMsg">Yükleniyor…</div>
+    <div id="loadingMsg">Yukleniyor…</div>
   </div>
 
   <div id="appSection">
     <div>
-      <div class="section-label">Müşteri Seçimi</div>
+      <div class="section-label">Musteri Secimi</div>
       <div class="search-wrap">
-        <input class="search-input" id="searchInput" type="text" placeholder="Müşteri adı ile ara…" oninput="filterCustomers()" onfocus="openDropdown()" autocomplete="off">
+        <input class="search-input" id="searchInput" type="text" placeholder="Musteri adi ile ara..." oninput="filterCustomers()" onfocus="openDropdown()" autocomplete="off">
         <div class="dropdown" id="dropdown"></div>
       </div>
       <div class="tags-wrap" id="selectedTags"></div>
     </div>
 
     <div>
-      <div class="section-label">Tarih Aralığı <span style="font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0">(opsiyonel)</span></div>
+      <div class="section-label">Tarih Araligi <span style="font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0">(opsiyonel)</span></div>
       <div class="date-row">
-        <div class="field-group"><label>Başlangıç</label><input class="date-input" type="date" id="dateFrom" onchange="updateStats()"></div>
-        <div class="field-group"><label>Bitiş</label><input class="date-input" type="date" id="dateTo" onchange="updateStats()"></div>
+        <div class="field-group"><label>Baslangic</label><input class="date-input" type="date" id="dateFrom" onchange="updateStats()"></div>
+        <div class="field-group"><label>Bitis</label><input class="date-input" type="date" id="dateTo" onchange="updateStats()"></div>
       </div>
     </div>
 
     <div class="checkbox-row">
       <input type="checkbox" id="sortByDate" checked onchange="updateStats()">
-      <label for="sortByDate">Tarihe göre sırala</label>
+      <label for="sortByDate">Tarihe gore sirala</label>
     </div>
 
     <hr>
 
     <div class="progress-wrap" id="progressWrap">
-      <div class="progress-label" id="progressLabel">İşleniyor…</div>
+      <div class="progress-label" id="progressLabel">Isleniyor…</div>
       <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
     </div>
 
     <div class="stats-bar" id="statsBar">
-      <div class="stat"><div class="stat-val" id="statRows">–</div><div class="stat-lbl">Kayıt</div></div>
+      <div class="stat"><div class="stat-val" id="statRows">–</div><div class="stat-lbl">Kayit</div></div>
       <div class="stat"><div class="stat-val" id="statDebit">–</div><div class="stat-lbl">Toplam Debit</div></div>
       <div class="stat"><div class="stat-val" id="statCredit">–</div><div class="stat-lbl">Toplam Credit</div></div>
       <div class="stat"><div class="stat-val" id="statBalance">–</div><div class="stat-lbl">Net Bakiye</div></div>
@@ -148,7 +148,7 @@ hr{border:none;border-top:1px solid var(--border)}
       <div class="status-msg" id="statusMsg"></div>
       <div style="display:flex;gap:10px;margin-left:auto">
         <button class="btn btn-outline" onclick="refreshData()">⟳ Verileri Yenile</button>
-        <button class="btn btn-primary" id="extreBtn" onclick="generateEkstre()" disabled>↓ Ekstre Oluştur &amp; Kaydet</button>
+        <button class="btn btn-primary" id="extreBtn" onclick="generateEkstre()" disabled>↓ Ekstre Olustur &amp; Kaydet</button>
       </div>
     </div>
   </div>
@@ -194,11 +194,11 @@ function loadScripts() {
       });
       gsiLoaded = true;
     } catch(e) {
-      showLoginStatus('GSI başlatılamadı: ' + e.message, 'error');
+      showLoginStatus('GSI baslatilamadi: ' + e.message, 'error');
     }
   };
   s1.onerror = function() {
-    showLoginStatus('Google kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.', 'error');
+    showLoginStatus('Google kutuphanesi yuklenemedi. Internet baglantinizi kontrol edin.', 'error');
   };
   document.head.appendChild(s1);
 }
@@ -210,11 +210,11 @@ window.onload = loadScripts;
 // ═══════════════════════════════════════════════════
 function handleLogin() {
   if (!gsiLoaded || !tokenClient) {
-    showLoginStatus('Google henüz hazır değil, 3 saniye bekleyin ve tekrar deneyin.', 'error');
+    showLoginStatus('Google henuz hazir degil, 3 saniye bekleyin ve tekrar deneyin.', 'error');
     return;
   }
   if (CONFIG.CLIENT_ID.indexOf('YOUR_CLIENT_ID') !== -1) {
-    showLoginStatus('Lütfen önce CLIENT_ID değerini HTML dosyasına girin!', 'error');
+    showLoginStatus('Lutfen once CLIENT_ID degerini HTML dosyasina girin!', 'error');
     return;
   }
   tokenClient.requestAccessToken({ prompt: 'consent' });
@@ -233,7 +233,7 @@ function handleLogout() {
 
 function onTokenReceived(resp) {
   if (resp.error) {
-    showLoginStatus('Giriş hatası: ' + resp.error + ' — ' + (resp.error_description || ''), 'error');
+    showLoginStatus('Giris hatasi: ' + resp.error + ' — ' + (resp.error_description || ''), 'error');
     return;
   }
   accessToken = resp.access_token;
@@ -243,11 +243,11 @@ function onTokenReceived(resp) {
   })
   .then(function(r) { return r.json(); })
   .then(function(u) {
-    document.getElementById('userName').textContent = u.name || u.email || 'Kullanıcı';
+    document.getElementById('userName').textContent = u.name || u.email || 'Kullanici';
     document.getElementById('userInfo').style.display = 'flex';
   })
   .catch(function() {
-    document.getElementById('userName').textContent = 'Giriş Yapıldı';
+    document.getElementById('userName').textContent = 'Giris Yapildi';
     document.getElementById('userInfo').style.display = 'flex';
   });
 
@@ -271,7 +271,7 @@ function findFolderByName(name, parentId) {
   if (parentId) q += " and '" + parentId + "' in parents";
   return gFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&pageSize=10')
     .then(function(r) {
-      if (!r.files || !r.files.length) throw new Error('"' + name + '" klasörü bulunamadı. Drive\'da bu isimde bir klasör var mı?');
+      if (!r.files || !r.files.length) throw new Error('"' + name + '" klasoru bulunamadi. Drive\'da bu isimde bir klasor var mi?');
       return r.files[0].id;
     });
 }
@@ -372,12 +372,12 @@ function fmtNum(n) {
 //  Load Data
 // ═══════════════════════════════════════════════════
 function loadAllData() {
-  showLoading('SOA ONE klasörü aranıyor…');
+  showLoading('SOA ONE klasoru araniyor…');
   document.getElementById('appSection').style.display = 'none';
 
   findFolderByName(CONFIG.FOLDER_SOA_NAME, null)
   .then(function(soaId) {
-    setLoadingMsg('CREDIT klasörü aranıyor…');
+    setLoadingMsg('CREDIT klasoru araniyor…');
     return Promise.all([
       findFolderByName(CONFIG.FOLDER_CREDIT_NAME, soaId),
       findFolderByName(CONFIG.FOLDER_DEBIT_NAME,  soaId)
@@ -393,7 +393,7 @@ function loadAllData() {
   })
   .then(function(fileLists) {
     var creditFiles = fileLists[0], debitFiles = fileLists[1];
-    setLoadingMsg('CREDIT dosyaları okunuyor (' + creditFiles.length + ' dosya)…');
+    setLoadingMsg('CREDIT dosyalari okunuyor (' + creditFiles.length + ' dosya)…');
 
     function readCredit(i) {
       if (i >= creditFiles.length) return Promise.resolve();
@@ -430,7 +430,7 @@ function loadAllData() {
 
     hideLoading();
     document.getElementById('appSection').style.display = 'flex';
-    showStatus(creditData.length + ' credit + ' + debitData.length + ' debit kayıt yüklendi. ' + allCustomers.length + ' müşteri.', 'info');
+    showStatus(creditData.length + ' credit + ' + debitData.length + ' debit kayit yuklendi. ' + allCustomers.length + ' musteri.', 'info');
   })
   .catch(function(e) {
     hideLoading();
@@ -461,7 +461,7 @@ function renderDropdown(q) {
     return c.toLowerCase().indexOf(q) !== -1 && selectedCustomers.indexOf(c) === -1;
   });
   if (!list.length) {
-    dd.innerHTML = '<div class="dropdown-empty">Sonuç bulunamadı</div>';
+    dd.innerHTML = '<div class="dropdown-empty">Sonuc bulunamadi</div>';
     return;
   }
   dd.innerHTML = list.slice(0,100).map(function(c) {
@@ -561,9 +561,9 @@ function updateStats() {
 function generateEkstre() {
   if (!selectedCustomers.length) return;
   var rows = buildRows();
-  if (!rows.length) { showStatus('Seçilen müşteri için kayıt bulunamadı.', 'error'); return; }
+  if (!rows.length) { showStatus('Secilen musteri icin kayit bulunamadi.', 'error'); return; }
 
-  showProgress(true, 'Excel oluşturuluyor…', 20);
+  showProgress(true, 'Excel olusturuluyor…', 20);
   document.getElementById('extreBtn').disabled = true;
 
   var headers = ['Date','Customer Name','B/L No','Document No','Remarks','TAX ID','ROE','Currency','Debit','Credit','Balance'];
@@ -583,7 +583,7 @@ function generateEkstre() {
   XLSX.utils.book_append_sheet(wb, ws, 'Ekstre');
   var xlsxBytes = XLSX.write(wb, { bookType:'xlsx', type:'array' });
 
-  showProgress(true, 'EKSTRELER klasörü aranıyor…', 50);
+  showProgress(true, 'EKSTRELER klasoru araniyor…', 50);
 
   findOrCreateFolder(CONFIG.FOLDER_EKSTRE_NAME, null)
   .then(function(folderId) {
@@ -621,7 +621,7 @@ function generateEkstre() {
     }).then(function() {
       showProgress(false);
       document.getElementById('extreBtn').disabled = false;
-      showStatus('✓ "' + fileName + '" EKSTRELER klasörüne kaydedildi. (' + rows.length + ' satır)', 'success');
+      showStatus('✓ "' + fileName + '" EKSTRELER klasorune kaydedildi. (' + rows.length + ' satir)', 'success');
     });
   })
   .catch(function(e) {
