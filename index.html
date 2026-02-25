@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ekstre Sistemi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+:root{--bg:#0f0f11;--surface:#18181c;--border:#2a2a32;--accent:#e8c547;--accent2:#4fc3f7;--text:#e8e8ec;--muted:#6b6b78;--success:#4caf7d;--danger:#e05c5c;--tag-bg:#252530;--tag-border:#3a3a48}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 16px 40px}
+header{width:100%;max-width:900px;padding:36px 0 24px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:40px}
+.logo-block h1{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--accent);letter-spacing:-.5px}
+.logo-block p{font-size:12px;color:var(--muted);margin-top:3px;font-weight:300;letter-spacing:.5px;text-transform:uppercase}
+#userInfo{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px}
+#userInfo span{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .2s;font-family:'IBM Plex Sans',sans-serif}
+.btn-google{background:#fff;color:#333;border:1px solid #ddd}
+.btn-google:hover{background:#f5f5f5;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.btn-primary{background:var(--accent);color:#0f0f11;font-weight:600}
+.btn-primary:hover{background:#f0cf60}
+.btn-primary:disabled{background:#3a3a28;color:var(--muted);cursor:not-allowed}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.card{width:100%;max-width:900px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px}
+#loginSection{display:flex;flex-direction:column;align-items:center;padding:60px 20px;gap:20px}
+#loginSection h2{font-size:18px;font-weight:500}
+#loginSection p{font-size:14px;color:var(--muted);text-align:center;max-width:400px;line-height:1.6}
+#loadingSection{display:none;flex-direction:column;align-items:center;padding:60px 20px;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loadingMsg{color:var(--muted);font-size:14px;text-align:center;max-width:500px}
+#appSection{display:none;flex-direction:column;gap:28px}
+.section-label{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.search-wrap{position:relative}
+.search-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:11px 16px;color:var(--text);font-size:14px;font-family:'IBM Plex Sans',sans-serif;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--muted)}
+.dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;max-height:240px;overflow-y:auto;z-index:100;display:none}
+.dropdown.open{display:block}
+.dropdown-item{padding:10px 16px;font-size:13px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border)}
+.dropdown-item:last-child{border-bottom:none}
+.dropdown-item:hover{background:#222228;color:var(--accent)}
+.dropdown-empty{padding:14px 16px;color:var(--muted);font-size:13px}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;min-height:10px}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--tag-bg);border:1px solid var(--tag-border);border-radius:4px;padding:5px 10px;font-size:12px;color:var(--accent2);font-family:'IBM Plex Mono',monospace}
+.tag-remove{cursor:pointer;color:var(--muted);font-size:14px;line-height:1;transition:color .15s}
+.tag-remove:hover{color:var(--danger)}
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field-group label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.date-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:11px 16px;color:var(--text);font-size:14px;font-family:'IBM Plex Sans',sans-serif;outline:none;transition:border-color .2s;color-scheme:dark}
+.date-input:focus{border-color:var(--accent)}
+hr{border:none;border-top:1px solid var(--border)}
+.progress-wrap{display:none;flex-direction:column;gap:8px}
+.progress-bar-outer{background:var(--border);border-radius:4px;height:4px}
+.progress-bar-inner{height:4px;background:var(--accent);border-radius:4px;transition:width .3s}
+.progress-label{font-size:12px;color:var(--muted)}
+.stats-bar{display:none;gap:24px;flex-wrap:wrap;padding:16px 20px;background:rgba(232,197,71,.04);border:1px solid rgba(232,197,71,.12);border-radius:8px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat-val{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--accent)}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.action-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.status-msg{font-size:13px;padding:8px 14px;border-radius:6px;display:none}
+.status-msg.success{background:rgba(76,175,125,.12);color:var(--success);border:1px solid rgba(76,175,125,.25);display:block}
+.status-msg.error{background:rgba(224,92,92,.12);color:var(--danger);border:1px solid rgba(224,92,92,.25);display:block}
+.status-msg.info{background:rgba(79,195,247,.08);color:var(--accent2);border:1px solid rgba(79,195,247,.2);display:block}
+.checkbox-row{display:flex;align-items:center;gap:8px}
+.checkbox-row input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px}
+.checkbox-row label{font-size:13px;color:var(--muted);cursor:pointer}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-block">
+    <h1>// EKSTRE SISTEMI</h1>
+    <p>Musteri Hesap Ekstresi · Google Drive</p>
+  </div>
+  <div id="userInfo" style="display:none">
+    <span id="userName"></span>
+    <button class="btn btn-outline" onclick="handleLogout()">Cikis</button>
+  </div>
+</header>
+
+<div class="card">
+  <div id="loginSection">
+    <h2>Google ile Giris Yapin</h2>
+    <p>SOA ONE klasorundeki verilere erismek ve ekstreyi Drive'iniza kaydetmek icin Google hesabinizla giris yapin.</p>
+    <button class="btn btn-google" id="loginBtn" onclick="handleLogin()">
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      Google ile Giris Yap
+    </button>
+    <div id="loginStatus" class="status-msg"></div>
+  </div>
+
+  <div id="loadingSection">
+    <div class="spinner"></div>
+    <div id="loadingMsg">Yukleniyor…</div>
+  </div>
+
+  <div id="appSection">
+    <div>
+      <div class="section-label">Musteri Secimi</div>
+      <div class="search-wrap">
+        <input class="search-input" id="searchInput" type="text" placeholder="Musteri adi ile ara..." oninput="filterCustomers()" onfocus="openDropdown()" autocomplete="off">
+        <div class="dropdown" id="dropdown"></div>
+      </div>
+      <div class="tags-wrap" id="selectedTags"></div>
+    </div>
+
+    <div>
+      <div class="section-label">Tarih Araligi <span style="font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0">(opsiyonel)</span></div>
+      <div class="date-row">
+        <div class="field-group"><label>Baslangic</label><input class="date-input" type="date" id="dateFrom" onchange="updateStats()"></div>
+        <div class="field-group"><label>Bitis</label><input class="date-input" type="date" id="dateTo" onchange="updateStats()"></div>
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="sortByDate" checked onchange="updateStats()">
+      <label for="sortByDate">Tarihe gore sirala</label>
+    </div>
+
+    <hr>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label" id="progressLabel">Isleniyor…</div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat"><div class="stat-val" id="statRows">–</div><div class="stat-lbl">Kayit</div></div>
+      <div class="stat"><div class="stat-val" id="statDebit">–</div><div class="stat-lbl">Toplam Debit</div></div>
+      <div class="stat"><div class="stat-val" id="statCredit">–</div><div class="stat-lbl">Toplam Credit</div></div>
+      <div class="stat"><div class="stat-val" id="statBalance">–</div><div class="stat-lbl">Net Bakiye</div></div>
+    </div>
+
+    <div class="action-row">
+      <div class="status-msg" id="statusMsg"></div>
+      <div style="display:flex;gap:10px;margin-left:auto">
+        <button class="btn btn-outline" onclick="refreshData()">⟳ Verileri Yenile</button>
+        <button class="btn btn-primary" id="extreBtn" onclick="generateEkstre()" disabled>↓ Ekstre Olustur &amp; Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONFIG — Client ID buraya
+// ═══════════════════════════════════════════════════
+var CONFIG = {
+  CLIENT_ID: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+  FOLDER_SOA_NAME:    'SOA ONE',
+  FOLDER_CREDIT_NAME: 'CREDIT',
+  FOLDER_DEBIT_NAME:  'DEBIT',
+  FOLDER_EKSTRE_NAME: 'EKSTRELER',
+  SCOPES: 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file'
+};
+
+// ═══════════════════════════════════════════════════
+//  State
+// ═══════════════════════════════════════════════════
+var tokenClient = null;
+var accessToken = null;
+var gsiLoaded   = false;
+var allCustomers = [];
+var selectedCustomers = [];
+var creditData = [];
+var debitData  = [];
+
+// ═══════════════════════════════════════════════════
+//  Script Loader
+// ═══════════════════════════════════════════════════
+function loadScripts() {
+  var s1 = document.createElement('script');
+  s1.src = 'https://accounts.google.com/gsi/client';
+  s1.async = true;
+  s1.onload = function() {
+    try {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CONFIG.CLIENT_ID,
+        scope: CONFIG.SCOPES,
+        callback: onTokenReceived
+      });
+      gsiLoaded = true;
+    } catch(e) {
+      showLoginStatus('GSI baslatilamadi: ' + e.message, 'error');
+    }
+  };
+  s1.onerror = function() {
+    showLoginStatus('Google kutuphanesi yuklenemedi. Internet baglantinizi kontrol edin.', 'error');
+  };
+  document.head.appendChild(s1);
+}
+
+window.onload = loadScripts;
+
+// ═══════════════════════════════════════════════════
+//  Auth
+// ═══════════════════════════════════════════════════
+function handleLogin() {
+  if (!gsiLoaded || !tokenClient) {
+    showLoginStatus('Google henuz hazir degil, 3 saniye bekleyin ve tekrar deneyin.', 'error');
+    return;
+  }
+  if (CONFIG.CLIENT_ID.indexOf('YOUR_CLIENT_ID') !== -1) {
+    showLoginStatus('Lutfen once CLIENT_ID degerini HTML dosyasina girin!', 'error');
+    return;
+  }
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+function handleLogout() {
+  if (accessToken) google.accounts.oauth2.revoke(accessToken);
+  accessToken = null;
+  allCustomers = []; selectedCustomers = [];
+  creditData = []; debitData = [];
+  document.getElementById('loginSection').style.display  = 'flex';
+  document.getElementById('appSection').style.display    = 'none';
+  document.getElementById('userInfo').style.display      = 'none';
+  document.getElementById('statsBar').style.display      = 'none';
+}
+
+function onTokenReceived(resp) {
+  if (resp.error) {
+    showLoginStatus('Giris hatasi: ' + resp.error + ' — ' + (resp.error_description || ''), 'error');
+    return;
+  }
+  accessToken = resp.access_token;
+
+  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { Authorization: 'Bearer ' + accessToken }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(u) {
+    document.getElementById('userName').textContent = u.name || u.email || 'Kullanici';
+    document.getElementById('userInfo').style.display = 'flex';
+  })
+  .catch(function() {
+    document.getElementById('userName').textContent = 'Giris Yapildi';
+    document.getElementById('userInfo').style.display = 'flex';
+  });
+
+  document.getElementById('loginSection').style.display = 'none';
+  loadAllData();
+}
+
+// ═══════════════════════════════════════════════════
+//  Drive API
+// ═══════════════════════════════════════════════════
+function gFetch(url) {
+  return fetch(url, { headers: { Authorization: 'Bearer ' + accessToken } })
+    .then(function(r) {
+      if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+      return r.json();
+    });
+}
+
+function findFolderByName(name, parentId) {
+  var q = "mimeType='application/vnd.google-apps.folder' and name='" + name.replace(/'/g, "\\'") + "' and trashed=false";
+  if (parentId) q += " and '" + parentId + "' in parents";
+  return gFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&pageSize=10')
+    .then(function(r) {
+      if (!r.files || !r.files.length) throw new Error('"' + name + '" klasoru bulunamadi. Drive\'da bu isimde bir klasor var mi?');
+      return r.files[0].id;
+    });
+}
+
+function listExcelFiles(folderId) {
+  var mimes = [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+    "text/csv"
+  ].map(function(m) { return "mimeType='" + m + "'"; }).join(' or ');
+  var q = '(' + mimes + ") and '" + folderId + "' in parents and trashed=false";
+
+  function fetchPage(token, acc) {
+    var url = 'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name),nextPageToken&pageSize=100';
+    if (token) url += '&pageToken=' + token;
+    return gFetch(url).then(function(r) {
+      var all = acc.concat(r.files || []);
+      if (r.nextPageToken) return fetchPage(r.nextPageToken, all);
+      return all;
+    });
+  }
+  return fetchPage(null, []);
+}
+
+function downloadBuffer(fileId) {
+  return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', {
+    headers: { Authorization: 'Bearer ' + accessToken }
+  }).then(function(r) {
+    if (!r.ok) throw new Error('Dosya indirilemedi (ID: ' + fileId + ')');
+    return r.arrayBuffer();
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  Excel Parse & Mapping
+// ═══════════════════════════════════════════════════
+function parseBuffer(buf) {
+  var wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true });
+  var ws = wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(ws, { defval: null, raw: false });
+}
+
+function mapCredit(r) {
+  return {
+    Date:         parseDate(r['Receipt Receipt Date']),
+    CustomerName: trim(r['Receipt Receipt Customer Name']),
+    BLNo:         r['Receipt Check Number'] || '-',
+    DocumentNo:   r['Receipt Receipt Number'] || '-',
+    Remarks:      r['Receipt Receipt Remarks'] || '-',
+    TaxID: '-', ROE: '-',
+    Currency:     r['Receipt Receipt Currency Code'] || '-',
+    Debit:  null,
+    Credit: parseAmt(r[' Measures Receipt Amount'] != null ? r[' Measures Receipt Amount'] : r['Measures Receipt Amount']),
+    _type: 'CREDIT'
+  };
+}
+
+function mapDebit(r) {
+  return {
+    Date:         parseDate(r['Receipt Receipt Refund AP GL Date']),
+    CustomerName: trim(r['Receipt Receipt Customer Name']),
+    BLNo:         r['Receipt Check Number'] || '-',
+    DocumentNo:   r['Receipt Receipt Number'] || '-',
+    Remarks:      r['Receipt Receipt Refund AP Remark'] || '-',
+    TaxID: '-',
+    ROE:          r['Receipts Inquiry (Detail) Write-Off Code'] || '-',
+    Currency:     r['Receipt Receipt Currency Code'] || '-',
+    Debit:        parseAmt(r[' Measures Total of Receipt Applied Amount'] != null ? r[' Measures Total of Receipt Applied Amount'] : r['Measures Total of Receipt Applied Amount']),
+    Credit: null,
+    _type: 'DEBIT'
+  };
+}
+
+function trim(v) { return v ? String(v).trim() : ''; }
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  var d = new Date(v); return isNaN(d.getTime()) ? null : d;
+}
+function parseAmt(v) {
+  if (v === null || v === undefined || v === '') return null;
+  var n = parseFloat(String(v).replace(/,/g, ''));
+  return isNaN(n) ? null : n;
+}
+function fmtDate(d) {
+  if (!d) return '-';
+  var dt = d instanceof Date ? d : new Date(d);
+  if (isNaN(dt.getTime())) return '-';
+  return pad(dt.getDate()) + '.' + pad(dt.getMonth()+1) + '.' + dt.getFullYear();
+}
+function pad(n) { return n < 10 ? '0'+n : ''+n; }
+function fmtNum(n) {
+  if (n === null || n === undefined) return '-';
+  return n.toLocaleString('tr-TR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+// ═══════════════════════════════════════════════════
+//  Load Data
+// ═══════════════════════════════════════════════════
+function loadAllData() {
+  showLoading('SOA ONE klasoru araniyor…');
+  document.getElementById('appSection').style.display = 'none';
+
+  findFolderByName(CONFIG.FOLDER_SOA_NAME, null)
+  .then(function(soaId) {
+    setLoadingMsg('CREDIT klasoru araniyor…');
+    return Promise.all([
+      findFolderByName(CONFIG.FOLDER_CREDIT_NAME, soaId),
+      findFolderByName(CONFIG.FOLDER_DEBIT_NAME,  soaId)
+    ]);
+  })
+  .then(function(ids) {
+    var creditFolderId = ids[0], debitFolderId = ids[1];
+    setLoadingMsg('Dosyalar listeleniyor…');
+    return Promise.all([
+      listExcelFiles(creditFolderId),
+      listExcelFiles(debitFolderId)
+    ]);
+  })
+  .then(function(fileLists) {
+    var creditFiles = fileLists[0], debitFiles = fileLists[1];
+    setLoadingMsg('CREDIT dosyalari okunuyor (' + creditFiles.length + ' dosya)…');
+
+    function readCredit(i) {
+      if (i >= creditFiles.length) return Promise.resolve();
+      setLoadingMsg('CREDIT okunuyor (' + (i+1) + '/' + creditFiles.length + '): ' + creditFiles[i].name);
+      return downloadBuffer(creditFiles[i].id).then(function(buf) {
+        var rows = parseBuffer(buf);
+        rows.forEach(function(r) {
+          if (trim(r['Receipt Receipt Customer Name'])) creditData.push(mapCredit(r));
+        });
+        return readCredit(i+1);
+      });
+    }
+
+    function readDebit(i) {
+      if (i >= debitFiles.length) return Promise.resolve();
+      setLoadingMsg('DEBIT okunuyor (' + (i+1) + '/' + debitFiles.length + '): ' + debitFiles[i].name);
+      return downloadBuffer(debitFiles[i].id).then(function(buf) {
+        var rows = parseBuffer(buf);
+        rows.forEach(function(r) {
+          if (trim(r['Receipt Receipt Customer Name'])) debitData.push(mapDebit(r));
+        });
+        return readDebit(i+1);
+      });
+    }
+
+    creditData = []; debitData = [];
+    return readCredit(0).then(function() { return readDebit(0); });
+  })
+  .then(function() {
+    var names = {};
+    creditData.forEach(function(r) { if (r.CustomerName) names[r.CustomerName] = 1; });
+    debitData.forEach(function(r)  { if (r.CustomerName) names[r.CustomerName] = 1; });
+    allCustomers = Object.keys(names).sort(function(a,b) { return a.localeCompare(b,'tr'); });
+
+    hideLoading();
+    document.getElementById('appSection').style.display = 'flex';
+    showStatus(creditData.length + ' credit + ' + debitData.length + ' debit kayit yuklendi. ' + allCustomers.length + ' musteri.', 'info');
+  })
+  .catch(function(e) {
+    hideLoading();
+    document.getElementById('loginSection').style.display = 'flex';
+    showStatus('Hata: ' + e.message, 'error');
+    console.error(e);
+  });
+}
+
+function refreshData() {
+  selectedCustomers = []; renderTags();
+  document.getElementById('statsBar').style.display = 'none';
+  document.getElementById('extreBtn').disabled = true;
+  loadAllData();
+}
+
+// ═══════════════════════════════════════════════════
+//  Customer UI
+// ═══════════════════════════════════════════════════
+function filterCustomers() {
+  renderDropdown(document.getElementById('searchInput').value.toLowerCase());
+  openDropdown();
+}
+
+function renderDropdown(q) {
+  var dd = document.getElementById('dropdown');
+  var list = allCustomers.filter(function(c) {
+    return c.toLowerCase().indexOf(q) !== -1 && selectedCustomers.indexOf(c) === -1;
+  });
+  if (!list.length) {
+    dd.innerHTML = '<div class="dropdown-empty">Sonuc bulunamadi</div>';
+    return;
+  }
+  dd.innerHTML = list.slice(0,100).map(function(c) {
+    return '<div class="dropdown-item" onclick="selectCustomer(' + JSON.stringify(c) + ')">' + hl(c, q) + '</div>';
+  }).join('');
+}
+
+function hl(text, q) {
+  if (!q) return text;
+  var i = text.toLowerCase().indexOf(q);
+  if (i < 0) return text;
+  return text.slice(0,i) + '<span style="color:var(--accent);font-weight:600">' + text.slice(i,i+q.length) + '</span>' + text.slice(i+q.length);
+}
+
+function openDropdown() {
+  renderDropdown(document.getElementById('searchInput').value.toLowerCase());
+  document.getElementById('dropdown').classList.add('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-wrap')) document.getElementById('dropdown').classList.remove('open');
+});
+
+function selectCustomer(name) {
+  if (selectedCustomers.indexOf(name) === -1) { selectedCustomers.push(name); renderTags(); }
+  document.getElementById('searchInput').value = '';
+  document.getElementById('dropdown').classList.remove('open');
+  updateExtreBtn(); updateStats();
+}
+
+function removeCustomer(name) {
+  selectedCustomers = selectedCustomers.filter(function(c) { return c !== name; });
+  renderTags(); updateExtreBtn(); updateStats();
+}
+
+function renderTags() {
+  document.getElementById('selectedTags').innerHTML = selectedCustomers.map(function(c) {
+    return '<div class="tag">' + c + ' <span class="tag-remove" onclick="removeCustomer(' + JSON.stringify(c) + ')">×</span></div>';
+  }).join('');
+}
+
+function updateExtreBtn() {
+  document.getElementById('extreBtn').disabled = selectedCustomers.length === 0;
+}
+
+// ═══════════════════════════════════════════════════
+//  Build Rows
+// ═══════════════════════════════════════════════════
+function buildRows() {
+  var fromVal = document.getElementById('dateFrom').value;
+  var toVal   = document.getElementById('dateTo').value;
+  var from = fromVal ? new Date(fromVal) : null;
+  var to   = toVal   ? new Date(toVal)   : null;
+  if (to) to.setHours(23,59,59,999);
+
+  function ok(r) {
+    if (selectedCustomers.indexOf(r.CustomerName) === -1) return false;
+    if (r.Date) {
+      if (from && r.Date < from) return false;
+      if (to   && r.Date > to)   return false;
+    }
+    return true;
+  }
+
+  var rows = creditData.filter(ok).concat(debitData.filter(ok));
+
+  if (document.getElementById('sortByDate').checked) {
+    rows.sort(function(a,b) {
+      return (a.Date ? a.Date.getTime() : 0) - (b.Date ? b.Date.getTime() : 0);
+    });
+  }
+
+  var balance = 0;
+  return rows.map(function(r) {
+    if (r._type === 'DEBIT')  balance += (r.Debit  || 0);
+    if (r._type === 'CREDIT') balance -= (r.Credit || 0);
+    return Object.assign({}, r, { Balance: balance });
+  });
+}
+
+function updateStats() {
+  if (!selectedCustomers.length) { document.getElementById('statsBar').style.display='none'; return; }
+  var rows = buildRows();
+  if (!rows.length) { document.getElementById('statsBar').style.display='none'; return; }
+  var td=0, tc=0;
+  rows.forEach(function(r) { td += r.Debit||0; tc += r.Credit||0; });
+  document.getElementById('statRows').textContent    = rows.length.toLocaleString('tr');
+  document.getElementById('statDebit').textContent   = fmtNum(td);
+  document.getElementById('statCredit').textContent  = fmtNum(tc);
+  document.getElementById('statBalance').textContent = fmtNum(td-tc);
+  document.getElementById('statsBar').style.display  = 'flex';
+}
+
+// ═══════════════════════════════════════════════════
+//  Generate Ekstre
+// ═══════════════════════════════════════════════════
+function generateEkstre() {
+  if (!selectedCustomers.length) return;
+  var rows = buildRows();
+  if (!rows.length) { showStatus('Secilen musteri icin kayit bulunamadi.', 'error'); return; }
+
+  showProgress(true, 'Excel olusturuluyor…', 20);
+  document.getElementById('extreBtn').disabled = true;
+
+  var headers = ['Date','Customer Name','B/L No','Document No','Remarks','TAX ID','ROE','Currency','Debit','Credit','Balance'];
+  var wsData  = [headers].concat(rows.map(function(r) {
+    return [
+      fmtDate(r.Date), r.CustomerName, r.BLNo, r.DocumentNo,
+      r.Remarks, r.TaxID, r.ROE, r.Currency,
+      r.Debit  !== null ? r.Debit  : '-',
+      r.Credit !== null ? r.Credit : '-',
+      r.Balance
+    ];
+  }));
+
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [{wch:14},{wch:44},{wch:18},{wch:22},{wch:52},{wch:14},{wch:10},{wch:10},{wch:14},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Ekstre');
+  var xlsxBytes = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+
+  showProgress(true, 'EKSTRELER klasoru araniyor…', 50);
+
+  findOrCreateFolder(CONFIG.FOLDER_EKSTRE_NAME, null)
+  .then(function(folderId) {
+    showProgress(true, 'Dosya kaydediliyor…', 75);
+
+    var now = new Date();
+    var ds  = now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate());
+    var cust = selectedCustomers.length === 1
+      ? selectedCustomers[0].replace(/[^a-zA-Z0-9\u00c0-\u017e ]/g,'').trim().replace(/ +/g,'_').slice(0,40)
+      : selectedCustomers.length + '_Musteri';
+    var fileName = 'EKSTRE_' + cust + '_' + ds + '.xlsx';
+
+    var boundary = 'ekstre_bnd_' + Date.now();
+    var meta     = JSON.stringify({ name: fileName, parents: [folderId] });
+    var enc      = new TextEncoder();
+    var p1 = enc.encode('--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + meta + '\r\n');
+    var p2 = enc.encode('--' + boundary + '\r\nContent-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n\r\n');
+    var p3 = enc.encode('\r\n--' + boundary + '--');
+    var body = new Uint8Array(p1.length + p2.length + xlsxBytes.byteLength + p3.length);
+    body.set(p1, 0);
+    body.set(p2, p1.length);
+    body.set(new Uint8Array(xlsxBytes), p1.length + p2.length);
+    body.set(p3, p1.length + p2.length + xlsxBytes.byteLength);
+
+    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+        'Content-Type': 'multipart/related; boundary=' + boundary
+      },
+      body: body
+    }).then(function(r) {
+      if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+      return r.json();
+    }).then(function() {
+      showProgress(false);
+      document.getElementById('extreBtn').disabled = false;
+      showStatus('✓ "' + fileName + '" EKSTRELER klasorune kaydedildi. (' + rows.length + ' satir)', 'success');
+    });
+  })
+  .catch(function(e) {
+    showProgress(false);
+    document.getElementById('extreBtn').disabled = false;
+    showStatus('Hata: ' + e.message, 'error');
+    console.error(e);
+  });
+}
+
+function findOrCreateFolder(name, parentId) {
+  return findFolderByName(name, parentId).catch(function() {
+    var meta = { name: name, mimeType: 'application/vnd.google-apps.folder' };
+    if (parentId) meta.parents = [parentId];
+    return fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(meta)
+    }).then(function(r) { return r.json(); }).then(function(r) { return r.id; });
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  UI Helpers
+// ═══════════════════════════════════════════════════
+function showLoading(msg) { document.getElementById('loadingSection').style.display='flex'; setLoadingMsg(msg); }
+function setLoadingMsg(msg) { document.getElementById('loadingMsg').textContent = msg; }
+function hideLoading() { document.getElementById('loadingSection').style.display='none'; }
+function showProgress(show, label, pct) {
+  document.getElementById('progressWrap').style.display = show ? 'flex' : 'none';
+  if (show) { document.getElementById('progressLabel').textContent=label; document.getElementById('progressBar').style.width=pct+'%'; }
+}
+function showStatus(msg, type) {
+  var el = document.getElementById('statusMsg');
+  el.textContent = msg; el.className = 'status-msg ' + type;
+  if (type !== 'error') setTimeout(function() { if (el.textContent===msg) el.className='status-msg'; }, 10000);
+}
+function showLoginStatus(msg, type) {
+  var el = document.getElementById('loginStatus');
+  el.textContent = msg; el.className = 'status-msg ' + type;
+}
+</script>
+</body>
+</html>
